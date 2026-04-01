@@ -2,11 +2,31 @@ import User from "./user.model.js";
 import { ApiError } from "../../utils/ApiError.js";
 
 /**
- * @description Retrieves all users from the database.
- * @returns {Promise<Array>} List of users excluding passwords
+ * @description Retrieves all users from the database with pagination.
+ * @param {Object} options - Pagination options { page, limit }
+ * @returns {Promise<Object>} Paginated list of users excluding passwords
  */
-const getAllUsers = async () => {
-  return await User.find().select("-password").sort({ createdAt: -1 });
+const getAllUsers = async ({ page = 1, limit = 20 } = {}) => {
+  page = Math.max(1, parseInt(page) || 1);
+  limit = Math.min(100, Math.max(1, parseInt(limit) || 20));
+  const skip = (page - 1) * limit;
+
+  const [data, total] = await Promise.all([
+    User.find().select("-password -refreshToken").sort({ createdAt: -1 }).skip(skip).limit(limit),
+    User.countDocuments(),
+  ]);
+
+  return {
+    data,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      hasNextPage: page < Math.ceil(total / limit),
+      hasPrevPage: page > 1,
+    },
+  };
 };
 
 /**

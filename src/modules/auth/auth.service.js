@@ -56,7 +56,9 @@ const register = async (userData) => {
  */
 const login = async ({ email, password }) => {
   const user = await User.findOne({ email });
-  if (!user) {
+
+  // Deliberately use the same generic message to avoid user enumeration
+  if (!user || !user.isActive) {
     throw new ApiError(401, "Invalid credentials");
   }
 
