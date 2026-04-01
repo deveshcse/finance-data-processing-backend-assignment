@@ -17,4 +17,21 @@ const rateLimiter = rateLimit({
   },
 });
 
-export { rateLimiter };
+/**
+ * @description Stricter rate limiter for sensitive authentication routes.
+ * Limits each IP to 10 requests per 15-minute window.
+ */
+const authRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: "Too many login/register attempts, please try again after 15 minutes.",
+    statusCode: 429,
+    data: null,
+  },
+});
+
+export { rateLimiter, authRateLimiter };

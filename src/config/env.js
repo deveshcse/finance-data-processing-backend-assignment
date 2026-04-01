@@ -23,6 +23,7 @@ const envSchema = z.object({
   }),
   JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
   JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
+  CORS_ORIGINS: z.string().default("http://localhost:5000"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 

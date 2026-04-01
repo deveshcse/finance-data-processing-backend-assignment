@@ -27,7 +27,11 @@ const errorHandler = (err, req, res, next) => {
   };
 
   // 3. Log the error for server-side debugging
-  logger.error(`${req.method} ${req.url}`, error);
+  if (error.statusCode >= 500) {
+    logger.error(`${req.method} ${req.url}`, error);
+  } else {
+    logger.warn(`${req.method} ${req.url} - ${error.statusCode}: ${error.message}`);
+  }
 
   // 4. Send the standardized JSON response
   return res.status(error.statusCode).json(response);

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { validate } from "../../middlewares/validate.js";
 import { authenticate } from "../../middlewares/authenticate.js";
+import { authRateLimiter } from "../../middlewares/rate-limiter.js";
 import { registerSchema, loginSchema, refreshTokenSchema } from "./auth.schema.js";
 import * as authController from "./auth.controller.js";
 
@@ -30,7 +31,12 @@ const router = Router();
  *       201:
  *         description: User registered successfully
  */
-router.post("/register", validate(registerSchema), authController.register);
+router.post(
+  "/register",
+  authRateLimiter,
+  validate(registerSchema),
+  authController.register
+);
 
 /**
  * @swagger
@@ -54,7 +60,8 @@ router.post("/register", validate(registerSchema), authController.register);
  *       200:
  *         description: Login successful
  */
-router.post("/login", validate(loginSchema), authController.login);
+router.post("/login", authRateLimiter, validate(loginSchema), authController.login);
+
 
 /**
  * @swagger

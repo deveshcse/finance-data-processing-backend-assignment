@@ -1,7 +1,17 @@
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import User from "../users/user.model.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { env } from "../../config/env.js";
+
+/**
+ * @description Helper to produce a SHA-256 hash of a token.
+ * Used to safely store and compare refresh tokens without exposing raw values.
+ * @param {string} token
+ * @returns {string} hex digest
+ */
+const hashToken = (token) =>
+  crypto.createHash("sha256").update(token).digest("hex");
 
 /**
  * @description Helper to generate both Access and Refresh tokens.
@@ -22,8 +32,8 @@ const generateTokens = async (user) => {
       { expiresIn: env.JWT_REFRESH_EXPIRES_IN }
     );
 
-    // Save refresh token to database
-    user.refreshToken = refreshToken;
+    // Store only the HASH of the refresh token — never the raw value
+    user.refreshToken = hashToken(refreshToken);
     await user.save({ validateBeforeSave: false });
 
     return { accessToken, refreshToken };
@@ -90,7 +100,8 @@ const refreshAccessToken = async (incomingRefreshToken) => {
       throw new ApiError(401, "Invalid refresh token");
     }
 
-    if (incomingRefreshToken !== user?.refreshToken) {
+    // Compare by hash — the DB stores a hash, never the raw token
+    if (hashToken(incomingRefreshToken) !== user?.refreshToken) {
       throw new ApiError(401, "Refresh token is expired or used");
     }
 

@@ -3,8 +3,16 @@ import Transaction from "../transactions/transaction.model.js";
 /**
  * @description Service to calculate total income, total expenses, and net balance.
  */
-const getSummary = async () => {
+const getSummary = async (filters = {}) => {
+  const query = {};
+  if (filters.startDate || filters.endDate) {
+    query.date = {};
+    if (filters.startDate) query.date.$gte = new Date(filters.startDate);
+    if (filters.endDate) query.date.$lte = new Date(filters.endDate);
+  }
+
   const stats = await Transaction.aggregate([
+    { $match: query },
     {
       $group: {
         _id: "$type",
@@ -32,8 +40,16 @@ const getSummary = async () => {
 /**
  * @description Service to get category-wise totals.
  */
-const getCategoryStats = async () => {
+const getCategoryStats = async (filters = {}) => {
+  const query = {};
+  if (filters.startDate || filters.endDate) {
+    query.date = {};
+    if (filters.startDate) query.date.$gte = new Date(filters.startDate);
+    if (filters.endDate) query.date.$lte = new Date(filters.endDate);
+  }
+
   return await Transaction.aggregate([
+    { $match: query },
     {
       $group: {
         _id: { category: "$category", type: "$type" },
@@ -55,8 +71,16 @@ const getCategoryStats = async () => {
 /**
  * @description Service to get monthly trends for income and expenses.
  */
-const getTrends = async () => {
+const getTrends = async (filters = {}) => {
+  const query = {};
+  if (filters.startDate || filters.endDate) {
+    query.date = {};
+    if (filters.startDate) query.date.$gte = new Date(filters.startDate);
+    if (filters.endDate) query.date.$lte = new Date(filters.endDate);
+  }
+
   return await Transaction.aggregate([
+    { $match: query },
     {
       $group: {
         _id: {

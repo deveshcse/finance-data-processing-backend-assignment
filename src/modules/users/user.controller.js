@@ -1,16 +1,17 @@
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
+import { ApiError } from "../../utils/ApiError.js";
 import * as userService from "./user.service.js";
 
 /**
  * @description Controller to get all users.
  */
 const getUsers = asyncHandler(async (req, res) => {
-  const users = await userService.getAllUsers();
+  const result = await userService.getAllUsers(req.query);
 
   return res
     .status(200)
-    .json(new ApiResponse(200, users, "Users retrieved successfully."));
+    .json(new ApiResponse(200, result, "Users retrieved successfully."));
 });
 
 /**
@@ -39,6 +40,10 @@ const updateUser = asyncHandler(async (req, res) => {
  * @description Controller to update user status (activate/deactivate).
  */
 const updateUserStatus = asyncHandler(async (req, res) => {
+  if (req.params.id === req.user._id.toString()) {
+    throw new ApiError(400, "You cannot deactivate your own account");
+  }
+
   const user = await userService.updateStatus(req.params.id, req.body.isActive);
 
   return res
@@ -50,6 +55,10 @@ const updateUserStatus = asyncHandler(async (req, res) => {
  * @description Controller to delete a user.
  */
 const deleteUser = asyncHandler(async (req, res) => {
+  if (req.params.id === req.user._id.toString()) {
+    throw new ApiError(400, "You cannot delete your own account");
+  }
+
   await userService.deleteUser(req.params.id);
 
   return res

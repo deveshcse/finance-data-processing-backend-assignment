@@ -13,10 +13,12 @@ const registerSchema = z.object({
     email: z
       .string({ required_error: "Email is required" })
       .trim()
-      .email("Invalid email format"),
+      .email("Invalid email format")
+      .max(128, "Email cannot exceed 128 characters"),
     password: z
       .string({ required_error: "Password is required" })
       .min(8, "Password must be at least 8 characters")
+      .max(128, "Password cannot exceed 128 characters")
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         "Password must contain at least one uppercase letter, one lowercase letter, and one number"
