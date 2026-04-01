@@ -58,7 +58,13 @@ npm run dev
 npm start
 ```
 
-## 🔌 API Documentation
+### 4. API Documentation (Swagger)
+Once the server is running, you can access the interactive API documentation at:
+**`http://localhost:5000/api-docs`**
+
+Use the **Authorize** button to provide your Bearer Token after logging in to test protected routes.
+
+## 🔌 API Documentation Summary
 
 ### Authentication
 - `POST /api/auth/register` - Create a new account

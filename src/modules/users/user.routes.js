@@ -15,14 +15,40 @@ const router = Router();
 router.use(authenticate);
 
 /**
- * @route   GET /api/users
- * @desc    Get all users (Admin and Analyst only)
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Get all users
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of users retrieved successfully
+ *       403:
+ *         description: Forbidden - Insufficient permissions
  */
 router.get("/", authorize("users", "read"), userController.getUsers);
 
 /**
- * @route   GET /api/users/:id
- * @desc    Get a user by ID (Admin and Analyst only)
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Get a user by ID
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User retrieved successfully
+ *       404:
+ *         description: User not found
  */
 router.get(
   "/:id",
@@ -32,8 +58,35 @@ router.get(
 );
 
 /**
- * @route   PATCH /api/users/:id
- * @desc    Update user details (Admin only)
+ * @swagger
+ * /api/users/{id}:
+ *   patch:
+ *     summary: Update user details
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User updated successfully
  */
 router.patch(
   "/:id",
@@ -43,8 +96,33 @@ router.patch(
 );
 
 /**
- * @route   PATCH /api/users/:id/status
- * @desc    Deactivate or Activate user (Admin only)
+ * @swagger
+ * /api/users/{id}/status:
+ *   patch:
+ *     summary: Update user active status
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - isActive
+ *             properties:
+ *               isActive:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: User status updated successfully
  */
 router.patch(
   "/:id/status",
@@ -54,8 +132,22 @@ router.patch(
 );
 
 /**
- * @route   DELETE /api/users/:id
- * @desc    Delete a user (Admin only)
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     summary: Delete a user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
  */
 router.delete(
   "/:id",

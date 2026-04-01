@@ -16,8 +16,36 @@ const router = Router();
 router.use(authenticate);
 
 /**
- * @route   POST /api/transactions
- * @desc    Create a new transaction (Admin only)
+ * @swagger
+ * /api/transactions:
+ *   post:
+ *     summary: Create a new transaction
+ *     tags: [Transactions]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [amount, type, category, date]
+ *             properties:
+ *               amount:
+ *                 type: number
+ *               type:
+ *                 type: string
+ *                 enum: [income, expense]
+ *               category:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *               notes:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Transaction created successfully
  */
 router.post(
   "/",
@@ -27,8 +55,36 @@ router.post(
 );
 
 /**
- * @route   GET /api/transactions
- * @desc    Get transactions with optional filters (Admin, Analyst, Viewer)
+ * @swagger
+ * /api/transactions:
+ *   get:
+ *     summary: Get all transactions with filters
+ *     tags: [Transactions]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum: [income, expense]
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *     responses:
+ *       200:
+ *         description: List of transactions retrieved successfully
  */
 router.get(
   "/",
@@ -38,8 +94,24 @@ router.get(
 );
 
 /**
- * @route   GET /api/transactions/:id
- * @desc    Get a specific transaction by ID (Admin, Analyst, Viewer)
+ * @swagger
+ * /api/transactions/{id}:
+ *   get:
+ *     summary: Get a specific transaction by ID
+ *     tags: [Transactions]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Transaction retrieved successfully
+ *       404:
+ *         description: Transaction not found
  */
 router.get(
   "/:id",
@@ -49,8 +121,41 @@ router.get(
 );
 
 /**
- * @route   PATCH /api/transactions/:id
- * @desc    Update a transaction (Admin only)
+ * @swagger
+ * /api/transactions/{id}:
+ *   patch:
+ *     summary: Update a transaction
+ *     tags: [Transactions]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               amount:
+ *                 type: number
+ *               type:
+ *                 type: string
+ *                 enum: [income, expense]
+ *               category:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *               notes:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Transaction updated successfully
  */
 router.patch(
   "/:id",
@@ -60,8 +165,22 @@ router.patch(
 );
 
 /**
- * @route   DELETE /api/transactions/:id
- * @desc    Delete a transaction (Admin only)
+ * @swagger
+ * /api/transactions/{id}:
+ *   delete:
+ *     summary: Delete a transaction
+ *     tags: [Transactions]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Transaction deleted successfully
  */
 router.delete(
   "/:id",

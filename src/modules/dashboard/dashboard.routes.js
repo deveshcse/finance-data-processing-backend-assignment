@@ -11,26 +11,58 @@ const router = Router();
 router.use(authenticate, authorize("dashboard", "read"));
 
 /**
- * @route   GET /api/dashboard/summary
- * @desc    Get total income, expense, and net balance
+ * @swagger
+ * /api/dashboard/summary:
+ *   get:
+ *     summary: Get financial summary
+ *     tags: [Dashboard]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Summary retrieved successfully
  */
 router.get("/summary", dashboardController.getSummary);
 
 /**
- * @route   GET /api/dashboard/categories
- * @desc    Get category-wise transaction totals
+ * @swagger
+ * /api/dashboard/categories:
+ *   get:
+ *     summary: Get category-wise totals
+ *     tags: [Dashboard]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Category stats retrieved successfully
  */
 router.get("/categories", dashboardController.getCategoryStats);
 
 /**
- * @route   GET /api/dashboard/trends
- * @desc    Get monthly income and expense trends
+ * @swagger
+ * /api/dashboard/trends:
+ *   get:
+ *     summary: Get monthly trends
+ *     tags: [Dashboard]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Trends retrieved successfully
  */
 router.get("/trends", dashboardController.getTrends);
 
 /**
- * @route   GET /api/dashboard/recent
- * @desc    Get the 10 most recent transactions
+ * @swagger
+ * /api/dashboard/recent:
+ *   get:
+ *     summary: Get recent transactions
+ *     tags: [Dashboard]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Recent transactions retrieved successfully
  */
 router.get("/recent", dashboardController.getRecentTransactions);
 

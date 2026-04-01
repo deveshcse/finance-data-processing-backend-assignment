@@ -3,6 +3,9 @@ import cors from "cors";
 import { rateLimiter } from "./middlewares/rate-limiter.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger.js";
+
 // Route imports
 import authRoutes from "./modules/auth/auth.routes.js";
 import userRoutes from "./modules/users/user.routes.js";
@@ -18,6 +21,11 @@ app.use(cors());
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(rateLimiter);
+
+/**
+ * @description Swagger UI registration
+ */
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 /**
  * @description API route registrations
