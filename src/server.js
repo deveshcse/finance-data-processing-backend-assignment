@@ -1,6 +1,7 @@
 import { app } from "./app.js";
 import connectDB from "./config/db.js";
 import { env } from "./config/env.js";
+import { logger } from "./utils/logger.js";
 
 /**
  * @description Main server entry point.
@@ -9,8 +10,8 @@ import { env } from "./config/env.js";
 
 // 1. Handle Uncaught Exceptions (Synchronous errors)
 process.on("uncaughtException", (err) => {
-  console.error("UNCAUGHT EXCEPTION!: Shutting down...");
-  console.error(err.name, err.message);
+  logger.error("UNCAUGHT EXCEPTION!: Shutting down...");
+  logger.error(err.name, err.message);
   process.exit(1);
 });
 
@@ -18,18 +19,18 @@ process.on("uncaughtException", (err) => {
 connectDB()
   .then(() => {
     app.listen(env.PORT, () => {
-      console.log(`Server is running on port: ${env.PORT}`);
-      console.log(`Health check: http://localhost:${env.PORT}/health`);
+      logger.success(`Server is running on port: ${env.PORT}`);
+      logger.info(`Health check: http://localhost:${env.PORT}/health`);
     });
   })
   .catch((err) => {
-    console.error("MongoDB connection failed!: ", err);
+    logger.error("MongoDB connection failed!: ", err);
     process.exit(1);
   });
 
 // 3. Handle Unhandled Rejections (Asynchronous errors)
 process.on("unhandledRejection", (err) => {
-  console.error("UNHANDLED REJECTION!: Shutting down...");
-  console.error(err.name, err.message);
+  logger.error("UNHANDLED REJECTION!: Shutting down...");
+  logger.error(err.name, err.message);
   process.exit(1);
 });

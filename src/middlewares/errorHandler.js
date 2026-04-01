@@ -1,5 +1,6 @@
 import { ApiError } from "../utils/ApiError.js";
 import { env } from "../config/env.js";
+import { logger } from "../utils/logger.js";
 
 /**
  * @description Global error handling middleware.
@@ -26,9 +27,7 @@ const errorHandler = (err, req, res, next) => {
   };
 
   // 3. Log the error for server-side debugging
-  if (env.NODE_ENV === "development") {
-    console.error(`[Error] ${req.method} ${req.url}:`, error);
-  }
+  logger.error(`${req.method} ${req.url}`, error);
 
   // 4. Send the standardized JSON response
   return res.status(error.statusCode).json(response);

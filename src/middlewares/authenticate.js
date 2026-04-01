@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { env } from "../config/env.js";
+import { logger } from "../utils/logger.js";
 
 /**
  * @description Authentication middleware that verifies the JWT from the Authorization header.
@@ -11,6 +12,7 @@ const authenticate = asyncHandler(async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    logger.warn("Authentication failed: Missing or invalid Authorization header");
     throw new ApiError(401, "Authentication token is missing or invalid");
   }
 
