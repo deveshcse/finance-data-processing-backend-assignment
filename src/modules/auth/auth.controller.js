@@ -2,12 +2,15 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { ApiError } from "../../utils/ApiError.js";
 import * as authService from "./auth.service.js";
+import { env } from "../../config/env.js";
 
-const cookieOptions = {
+const cookieOptions = (maxAge = null) => ({
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
+  secure: env.NODE_ENV === "production",
   sameSite: "strict",
-};
+  ...(maxAge && { maxAge }),
+});
+
 
 /**
  * @description Controller for user registration.
@@ -18,8 +21,8 @@ const register = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .cookie("accessToken", accessToken, cookieOptions)
-    .cookie("refreshToken", refreshToken, cookieOptions)
+    .cookie("accessToken", accessToken, cookieOptions(env.ACCESS_TOKEN_MAX_AGE))
+    .cookie("refreshToken", refreshToken, cookieOptions(env.REFRESH_TOKEN_MAX_AGE))
     .json(
       new ApiResponse(
         201,
@@ -37,8 +40,8 @@ const login = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, cookieOptions)
-    .cookie("refreshToken", refreshToken, cookieOptions)
+    .cookie("accessToken", accessToken, cookieOptions(env.ACCESS_TOKEN_MAX_AGE))
+    .cookie("refreshToken", refreshToken, cookieOptions(env.REFRESH_TOKEN_MAX_AGE))
     .json(
       new ApiResponse(
         200,
@@ -56,8 +59,8 @@ const logout = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .clearCookie("accessToken", cookieOptions)
-    .clearCookie("refreshToken", cookieOptions)
+    .clearCookie("accessToken", cookieOptions())
+    .clearCookie("refreshToken", cookieOptions())
     .json(new ApiResponse(200, null, "Logged out successfully."));
 });
 
@@ -77,8 +80,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, cookieOptions)
-    .cookie("refreshToken", newRefreshToken, cookieOptions)
+    .cookie("accessToken", accessToken, cookieOptions(env.ACCESS_TOKEN_MAX_AGE))
+    .cookie("refreshToken", newRefreshToken, cookieOptions(env.REFRESH_TOKEN_MAX_AGE))
     .json(
       new ApiResponse(
         200,

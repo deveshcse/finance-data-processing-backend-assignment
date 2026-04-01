@@ -1,12 +1,13 @@
 import { rateLimit } from "express-rate-limit";
+import { env } from "../config/env.js";
 
 /**
  * @description Standard rate limiter to prevent brute-force attacks and abuse.
  * Limits each IP to 100 requests per 15-minute window.
  */
 const rateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per window
+  windowMs: env.RATE_LIMIT_WINDOW_MS,
+  max: env.RATE_LIMIT_MAX_GLOBAL,
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: {
@@ -19,11 +20,11 @@ const rateLimiter = rateLimit({
 
 /**
  * @description Stricter rate limiter for sensitive authentication routes.
- * Limits each IP to 10 requests per 15-minute window.
+ * Limits each IP to 20 requests per 15-minute window.
  */
 const authRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 requests per window
+  windowMs: env.RATE_LIMIT_WINDOW_MS,
+  max: env.RATE_LIMIT_MAX_AUTH,
   standardHeaders: true,
   legacyHeaders: false,
   message: {

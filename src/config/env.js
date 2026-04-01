@@ -23,7 +23,15 @@ const envSchema = z.object({
   }),
   JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
   JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
+  SERVER_URL: z.string().url().default("http://localhost:5000"),
   CORS_ORIGINS: z.string().default("http://localhost:5000"),
+  RATE_LIMIT_WINDOW_MS: z.string().default("900000").transform(Number),
+  RATE_LIMIT_MAX_GLOBAL: z.string().default("100").transform(Number),
+  RATE_LIMIT_MAX_AUTH: z.string().default("20").transform(Number),
+  BCRYPT_SALT_ROUNDS: z.string().default("12").transform(Number),
+  API_VERSION: z.string().default("v1"),
+  ACCESS_TOKEN_MAX_AGE: z.string().default("900000").transform(Number), // 15m
+  REFRESH_TOKEN_MAX_AGE: z.string().default("604800000").transform(Number), // 7d
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 

@@ -17,7 +17,7 @@ router.use(authenticate);
 
 /**
  * @swagger
- * /api/transactions:
+ * /api/v1/transactions:
  *   post:
  *     summary: Create a new transaction
  *     tags: [Transactions]
@@ -56,7 +56,7 @@ router.post(
 
 /**
  * @swagger
- * /api/transactions:
+ * /api/v1/transactions:
  *   get:
  *     summary: Get all transactions with filters
  *     tags: [Transactions]
@@ -95,7 +95,7 @@ router.get(
 
 /**
  * @swagger
- * /api/transactions/{id}:
+ * /api/v1/transactions/{id}:
  *   get:
  *     summary: Get a specific transaction by ID
  *     tags: [Transactions]
@@ -122,7 +122,7 @@ router.get(
 
 /**
  * @swagger
- * /api/transactions/{id}:
+ * /api/v1/transactions/{id}:
  *   patch:
  *     summary: Update a transaction
  *     tags: [Transactions]
@@ -166,7 +166,7 @@ router.patch(
 
 /**
  * @swagger
- * /api/transactions/{id}:
+ * /api/v1/transactions/{id}:
  *   delete:
  *     summary: Delete a transaction
  *     tags: [Transactions]

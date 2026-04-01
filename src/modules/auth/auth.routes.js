@@ -9,7 +9,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/auth/register:
+ * /api/v1/auth/register:
  *   post:
  *     summary: Register a new user
  *     tags: [Auth]
@@ -40,7 +40,7 @@ router.post(
 
 /**
  * @swagger
- * /api/auth/login:
+ * /api/v1/auth/login:
  *   post:
  *     summary: Login a user
  *     tags: [Auth]
@@ -65,7 +65,7 @@ router.post("/login", authRateLimiter, validate(loginSchema), authController.log
 
 /**
  * @swagger
- * /api/auth/refresh-token:
+ * /api/v1/auth/refresh-token:
  *   post:
  *     summary: Refresh the access token
  *     tags: [Auth]
@@ -90,7 +90,7 @@ router.post(
 
 /**
  * @swagger
- * /api/auth/logout:
+ * /api/v1/auth/logout:
  *   post:
  *     summary: Logout and clear cookies
  *     tags: [Auth]

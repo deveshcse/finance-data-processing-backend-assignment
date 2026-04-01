@@ -12,7 +12,7 @@ router.use(authenticate, authorize("dashboard", "read"));
 
 /**
  * @swagger
- * /api/dashboard/summary:
+ * /api/v1/dashboard/summary:
  *   get:
  *     summary: Get financial summary
  *     tags: [Dashboard]
@@ -26,7 +26,7 @@ router.get("/summary", dashboardController.getSummary);
 
 /**
  * @swagger
- * /api/dashboard/categories:
+ * /api/v1/dashboard/categories:
  *   get:
  *     summary: Get category-wise totals
  *     tags: [Dashboard]
@@ -40,7 +40,7 @@ router.get("/categories", dashboardController.getCategoryStats);
 
 /**
  * @swagger
- * /api/dashboard/trends:
+ * /api/v1/dashboard/trends:
  *   get:
  *     summary: Get monthly trends
  *     tags: [Dashboard]
@@ -54,7 +54,7 @@ router.get("/trends", dashboardController.getTrends);
 
 /**
  * @swagger
- * /api/dashboard/recent:
+ * /api/v1/dashboard/recent:
  *   get:
  *     summary: Get recent transactions
  *     tags: [Dashboard]

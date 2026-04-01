@@ -1,6 +1,37 @@
 # Finance Dashboard Backend
 
+- [x] Fix 13: Add dashboard date-range filtering
+- [x] Fix 14: Final Production Hardening (Docker, Dynamic URLs, Security)
+
 A robust backend system for a Finance Dashboard, featuring Role-Based Access Control (RBAC), transaction tracking, and financial analytics.
+
+## 🚀 Deployment
+
+The project is production-ready with a Dockerfile and environment-aware configuration.
+
+### 1. Environment Checklist (Production)
+Ensure these are set in your cloud provider:
+- `MONGODB_URI`: Production MongoDB Atlas string.
+- `JWT_ACCESS_SECRET`: A long, random string.
+- `JWT_REFRESH_SECRET`: A different long, random string.
+- `SERVER_URL`: Your deployed API URL (e.g., `https://api.yourdomain.com`).
+- `CORS_ORIGINS`: Comma-separated list of allowed frontends.
+- `NODE_ENV`: `production`
+
+### 2. Docker Deployment
+```bash
+docker build -t finance-backend .
+docker run -p 5000:5000 --env-file .env finance-backend
+```
+
+### 3. Manual Deployment
+```bash
+npm install
+npm start
+```
+
+## 📜 Complete Audit & Fixes
+The project has undergone a professional architecture audit and all 13 critical/important issues have been resolved.
 
 ## 🚀 Tech Stack
 

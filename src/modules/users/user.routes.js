@@ -16,7 +16,7 @@ router.use(authenticate);
 
 /**
  * @swagger
- * /api/users:
+ * /api/v1/users:
  *   get:
  *     summary: Get all users
  *     tags: [Users]
@@ -32,7 +32,7 @@ router.get("/", authorize("users", "read"), userController.getUsers);
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/v1/users/{id}:
  *   get:
  *     summary: Get a user by ID
  *     tags: [Users]
@@ -59,7 +59,7 @@ router.get(
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/v1/users/{id}:
  *   patch:
  *     summary: Update user details
  *     tags: [Users]
@@ -97,7 +97,7 @@ router.patch(
 
 /**
  * @swagger
- * /api/users/{id}/status:
+ * /api/v1/users/{id}/status:
  *   patch:
  *     summary: Update user active status
  *     tags: [Users]
@@ -133,7 +133,7 @@ router.patch(
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/v1/users/{id}:
  *   delete:
  *     summary: Delete a user
  *     tags: [Users]

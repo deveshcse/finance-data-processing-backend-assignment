@@ -50,20 +50,26 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 /**
  * @description API route registrations
  */
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/transactions", transactionRoutes);
-app.use("/api/dashboard", dashboardRoutes);
+const API_PREFIX = `/api/${env.API_VERSION}`;
+
+app.use(`${API_PREFIX}/auth`, authRoutes);
+app.use(`${API_PREFIX}/users`, userRoutes);
+app.use(`${API_PREFIX}/transactions`, transactionRoutes);
+app.use(`${API_PREFIX}/dashboard`, dashboardRoutes);
 
 // Health check route
 app.get("/health", (req, res) => {
+  const protocol = req.protocol;
+  const host = req.get("host");
+  const baseUrl = `${protocol}://${host}`;
+
   res.status(200).json({
     status: "ok",
     message: "Server is running",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    env: process.env.NODE_ENV,
-    docs: "http://localhost:5000/api-docs",
+    env: env.NODE_ENV,
+    docs: `${baseUrl}/api-docs`,
   });
 });
 
