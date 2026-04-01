@@ -1,76 +1,118 @@
 import jwt from "jsonwebtoken";
-import User from "../users/user.model.js"; // Note: User model will be created in task 19
+import User from "../users/user.model.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { env } from "../../config/env.js";
 
 /**
- * @description Service to handle user registration logic.
- * @param {Object} userData - { name, email, password }
- * @returns {Promise<Object>} The registered user object (without password)
+ * @description Helper to generate both Access and Refresh tokens.
+ * @param {Object} user - User object
+ * @returns {Promise<Object>} Object containing accessToken and refreshToken
  */
-const register = async (userData) => {
-  const { name, email, password } = userData;
+const generateTokens = async (user) => {
+  try {
+    const accessToken = jwt.sign(
+      { _id: user._id, role: user.role },
+      env.JWT_ACCESS_SECRET,
+      { expiresIn: env.JWT_ACCESS_EXPIRES_IN }
+    );
 
-  // 1. Check if user already exists
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    throw new ApiError(400, "User with this email already exists");
+    const refreshToken = jwt.sign(
+      { _id: user._id },
+      env.JWT_REFRESH_SECRET,
+      { expiresIn: env.JWT_REFRESH_EXPIRES_IN }
+    );
+
+    // Save refresh token to database
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(500, "Something went wrong while generating tokens");
   }
-
-  // 2. Create the new user (hashing is handled in User model pre-save hook)
-  const user = await User.create({
-    name,
-    email,
-    password,
-  });
-
-  // 3. Convert to object and remove sensitive data
-  const userResponse = user.toObject();
-  delete userResponse.password;
-
-  return userResponse;
 };
 
 /**
- * @description Service to handle user login logic.
- * @param {Object} loginData - { email, password }
- * @returns {Promise<Object>} { user, token }
+ * @description Register a new user and return tokens.
  */
-const login = async (loginData) => {
-  const { email, password } = loginData;
+const register = async (userData) => {
+  const { email } = userData;
 
-  // 1. Find user by email and select password field
-  const user = await User.findOne({ email });
-  if (!user) {
-    throw new ApiError(401, "Invalid email or password");
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new ApiError(409, "User with this email already exists");
   }
 
-  // 2. Check if the user account is active
-  if (!user.isActive) {
-    throw new ApiError(403, "Your account has been deactivated. Please contact support.");
-  }
+  const user = await User.create(userData);
+  const { accessToken, refreshToken } = await generateTokens(user);
 
-  // 3. Verify password (comparePassword is a model instance method)
-  const isMatch = await user.comparePassword(password);
-  if (!isMatch) {
-    throw new ApiError(401, "Invalid email or password");
-  }
+  const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
-  // 4. Generate JWT token
-  const token = jwt.sign(
-    { _id: user._id, role: user.role },
-    env.JWT_SECRET,
-    { expiresIn: env.JWT_EXPIRES_IN }
-  );
-
-  // 5. Prepare user response
-  const userResponse = user.toObject();
-  delete userResponse.password;
-
-  return {
-    user: userResponse,
-    token,
-  };
+  return { user: createdUser, accessToken, refreshToken };
 };
 
-export { register, login };
+/**
+ * @description Authenticate user and return tokens.
+ */
+const login = async ({ email, password }) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new ApiError(401, "Invalid credentials");
+  }
+
+  const isPasswordValid = await user.comparePassword(password);
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid credentials");
+  }
+
+  const { accessToken, refreshToken } = await generateTokens(user);
+
+  const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+
+  return { user: loggedInUser, accessToken, refreshToken };
+};
+
+/**
+ * @description Refresh the Access Token using a valid Refresh Token (implements rotation).
+ */
+const refreshAccessToken = async (incomingRefreshToken) => {
+  try {
+    const decodedToken = jwt.verify(
+      incomingRefreshToken,
+      env.JWT_REFRESH_SECRET
+    );
+
+    const user = await User.findById(decodedToken?._id);
+
+    if (!user) {
+      throw new ApiError(401, "Invalid refresh token");
+    }
+
+    if (incomingRefreshToken !== user?.refreshToken) {
+      throw new ApiError(401, "Refresh token is expired or used");
+    }
+
+    const { accessToken, refreshToken: newRefreshToken } = await generateTokens(user);
+
+    return { accessToken, refreshToken: newRefreshToken };
+  } catch (error) {
+    throw new ApiError(401, error?.message || "Invalid refresh token");
+  }
+};
+
+/**
+ * @description Clear the refresh token from the database.
+ */
+const logout = async (userId) => {
+  await User.findByIdAndUpdate(
+    userId,
+    {
+      $unset: {
+        refreshToken: 1, // Remove field
+      },
+    },
+    { new: true }
+  );
+};
+
+export { register, login, refreshAccessToken, logout };

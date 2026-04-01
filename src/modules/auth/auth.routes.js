@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { validate } from "../../middlewares/validate.js";
-import { registerSchema, loginSchema } from "./auth.schema.js";
+import { authenticate } from "../../middlewares/authenticate.js";
+import { registerSchema, loginSchema, refreshTokenSchema } from "./auth.schema.js";
 import * as authController from "./auth.controller.js";
 
 const router = Router();
@@ -17,10 +18,7 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - name
- *               - email
- *               - password
+ *             required: [name, email, password]
  *             properties:
  *               name:
  *                 type: string
@@ -31,8 +29,6 @@ const router = Router();
  *     responses:
  *       201:
  *         description: User registered successfully
- *       400:
- *         description: Validation error or user already exists
  */
 router.post("/register", validate(registerSchema), authController.register);
 
@@ -48,9 +44,7 @@ router.post("/register", validate(registerSchema), authController.register);
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - email
- *               - password
+ *             required: [email, password]
  *             properties:
  *               email:
  *                 type: string
@@ -59,9 +53,46 @@ router.post("/register", validate(registerSchema), authController.register);
  *     responses:
  *       200:
  *         description: Login successful
- *       401:
- *         description: Invalid credentials
  */
 router.post("/login", validate(loginSchema), authController.login);
+
+/**
+ * @swagger
+ * /api/auth/refresh-token:
+ *   post:
+ *     summary: Refresh the access token
+ *     tags: [Auth]
+ *     requestBody:
+ *       description: Optional if provided in cookies
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Access token refreshed successfully
+ */
+router.post(
+  "/refresh-token",
+  validate(refreshTokenSchema),
+  authController.refreshAccessToken
+);
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Logout and clear cookies
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ */
+router.post("/logout", authenticate, authController.logout);
 
 export default router;

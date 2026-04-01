@@ -7,7 +7,7 @@ const options = {
     info: {
       title: "Finance Dashboard API",
       version: "1.0.0",
-      description: "A comprehensive API for managing personal or business finances with RBAC.",
+      description: "A comprehensive API for managing personal or business finances with RBAC. Supports JWT Access Tokens and Refresh Token Rotation.",
       contact: {
         name: "Developer",
       },

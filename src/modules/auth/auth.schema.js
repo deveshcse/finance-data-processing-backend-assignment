@@ -37,4 +37,25 @@ const loginSchema = z.object({
   }),
 });
 
-export { registerSchema, loginSchema };
+/**
+ * @description Schema for refreshing access token.
+ * Supports token extraction from both HttpOnly cookies (recommended) or request body.
+ */
+const refreshTokenSchema = z
+  .object({
+    cookies: z
+      .object({
+        refreshToken: z.string().optional(),
+      })
+      .optional(),
+    body: z
+      .object({
+        refreshToken: z.string().optional(),
+      })
+      .optional(),
+  })
+  .refine((data) => data.cookies?.refreshToken || data.body?.refreshToken, {
+    message: "Refresh token is required (either in cookies or body)",
+  });
+
+export { registerSchema, loginSchema, refreshTokenSchema };

@@ -11,12 +11,14 @@ const validate = (schema) => (req, res, next) => {
       body: req.body,
       query: req.query,
       params: req.params,
+      cookies: req.cookies,
     });
 
     // Replace request data with validated/transformed data
     req.body = validatedData.body;
     req.query = validatedData.query;
     req.params = validatedData.params;
+    req.cookies = validatedData.cookies;
 
     next();
   } catch (error) {

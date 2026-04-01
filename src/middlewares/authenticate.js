@@ -17,7 +17,7 @@ const authenticate = asyncHandler(async (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, env.JWT_SECRET);
+    const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET);
 
     // Attach user info to the request object
     req.user = {
