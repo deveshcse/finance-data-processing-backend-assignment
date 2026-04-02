@@ -18,6 +18,9 @@ import { ApiError } from "./utils/ApiError.js";
 
 const app = express();
 
+// Trust proxy for rate limiting (essential when behind Render/Heroku/Cloudflare)
+app.set("trust proxy", 1);
+
 /**
  * @description Global Middlewares
  */
