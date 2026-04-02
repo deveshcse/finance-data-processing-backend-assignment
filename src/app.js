@@ -57,7 +57,37 @@ app.use(`${API_PREFIX}/users`, userRoutes);
 app.use(`${API_PREFIX}/transactions`, transactionRoutes);
 app.use(`${API_PREFIX}/dashboard`, dashboardRoutes);
 
-// Health check route
+/**
+ * @openapi
+ * /health:
+ *   get:
+ *     summary: Health Check
+ *     description: Returns the health status of the server.
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Server is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ok
+ *                 message:
+ *                   type: string
+ *                   example: Server is running
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 uptime:
+ *                   type: number
+ *                 env:
+ *                   type: string
+ *                 docs:
+ *                   type: string
+ */
 app.get("/health", (req, res) => {
   const protocol = req.protocol;
   const host = req.get("host");
@@ -69,6 +99,37 @@ app.get("/health", (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     env: env.NODE_ENV,
+    docs: `${baseUrl}/api-docs`,
+  });
+});
+
+/**
+ * @openapi
+ * /:
+ *   get:
+ *     summary: Root Route
+ *     description: Returns API documentation link.
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: API documentation link
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 docs:
+ *                   type: string
+ */
+app.get("/", (req, res) => {
+  const protocol = req.protocol;
+  const host = req.get("host");
+  const baseUrl = `${protocol}://${host}`;
+
+  res.status(200).json({
+    message: "Finance Dashboard API is running",
     docs: `${baseUrl}/api-docs`,
   });
 });
