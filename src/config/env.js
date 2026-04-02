@@ -23,7 +23,6 @@ const envSchema = z.object({
   }),
   JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
   JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
-  SERVER_URL: z.string().url().default("http://localhost:5000"),
   CORS_ORIGINS: z.string().default("http://localhost:5000"),
   RATE_LIMIT_WINDOW_MS: z.string().default("900000").transform(Number),
   RATE_LIMIT_MAX_GLOBAL: z.string().default("100").transform(Number),

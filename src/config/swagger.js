@@ -14,7 +14,7 @@ const options = {
     },
     servers: [
       {
-        url: env.SERVER_URL,
+        url: "/",
         description: env.NODE_ENV === "production" ? "Production server" : "Local development server",
       },
     ],

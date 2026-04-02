@@ -20,7 +20,8 @@ connectDB()
   .then(() => {
     app.listen(env.PORT, () => {
       logger.success(`Server is running on port: ${env.PORT}`);
-      logger.info(`Health check: http://localhost:${env.PORT}/health`);
+      const healthCheckUrl = env.NODE_ENV === "production" ? "/health" : `http://localhost:${env.PORT}/health`;
+      logger.info(`Health check: ${healthCheckUrl}`);
     });
   })
   .catch((err) => {
