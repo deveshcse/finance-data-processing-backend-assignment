@@ -2,7 +2,13 @@ import { Router } from "express";
 import { validate } from "../../middlewares/validate.js";
 import { authenticate } from "../../middlewares/authenticate.js";
 import { authRateLimiter } from "../../middlewares/rate-limiter.js";
-import { registerSchema, loginSchema, refreshTokenSchema } from "./auth.schema.js";
+import { 
+  registerSchema, 
+  loginSchema, 
+  refreshTokenSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema 
+} from "./auth.schema.js";
 import * as authController from "./auth.controller.js";
 
 const router = Router();
@@ -101,5 +107,65 @@ router.post(
  *         description: Logged out successfully
  */
 router.post("/logout", authenticate, authController.logout);
+
+/**
+ * @swagger
+ * /api/v1/auth/forgot-password:
+ *   post:
+ *     summary: Request a password reset email
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password reset email sent
+ */
+router.post(
+  "/forgot-password",
+  authRateLimiter,
+  validate(forgotPasswordSchema),
+  authController.forgotPassword
+);
+
+/**
+ * @swagger
+ * /api/v1/auth/reset-password/{token}:
+ *   post:
+ *     summary: Reset password using token
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [password]
+ *             properties:
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password reset successful
+ */
+router.post(
+  "/reset-password/:token",
+  authRateLimiter,
+  validate(resetPasswordSchema),
+  authController.resetPassword
+);
 
 export default router;

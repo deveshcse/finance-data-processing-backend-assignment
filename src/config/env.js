@@ -32,6 +32,11 @@ const envSchema = z.object({
   ACCESS_TOKEN_MAX_AGE: z.string().default("900000").transform(Number), // 15m
   REFRESH_TOKEN_MAX_AGE: z.string().default("604800000").transform(Number), // 7d
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  RESEND_API_KEY: z.string({
+    required_error: "RESEND_API_KEY is required",
+  }),
+  EMAIL_FROM: z.string().default("onboarding@resend.dev"),
+  FRONTEND_URL: z.string().default("http://localhost:3000"),
 });
 
 // Validate process.env against requested schema

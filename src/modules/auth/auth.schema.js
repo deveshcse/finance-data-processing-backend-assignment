@@ -60,4 +60,41 @@ const refreshTokenSchema = z
     message: "Refresh token is required (either in cookies or body)",
   });
 
-export { registerSchema, loginSchema, refreshTokenSchema };
+/**
+ * @description Zod schema for the Forgot Password request.
+ */
+const forgotPasswordSchema = z.object({
+  body: z.object({
+    email: z
+      .string({ required_error: "Email is required" })
+      .trim()
+      .email("Invalid email format"),
+  }),
+});
+
+/**
+ * @description Zod schema for the Reset Password request.
+ */
+const resetPasswordSchema = z.object({
+  params: z.object({
+    token: z.string({ required_error: "Reset token is required" }),
+  }),
+  body: z.object({
+    password: z
+      .string({ required_error: "Password is required" })
+      .min(8, "Password must be at least 8 characters")
+      .max(128, "Password cannot exceed 128 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      ),
+  }),
+});
+
+export {
+  registerSchema,
+  loginSchema,
+  refreshTokenSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+};

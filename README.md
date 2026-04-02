@@ -1,8 +1,4 @@
 # Finance Dashboard Backend
-
-- [x] Fix 13: Add dashboard date-range filtering
-- [x] Fix 14: Final Production Hardening (Docker, Dynamic URLs, Security)
-
 A robust backend system for a Finance Dashboard, featuring Role-Based Access Control (RBAC), transaction tracking, and financial analytics.
 
 ## 🚀 Deployment

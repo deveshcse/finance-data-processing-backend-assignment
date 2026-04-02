@@ -3,6 +3,7 @@ import crypto from "crypto";
 import User from "../users/user.model.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { env } from "../../config/env.js";
+import { sendResetPasswordEmail } from "../../utils/email.service.js";
 
 /**
  * @description Helper to produce a SHA-256 hash of a token.
@@ -128,4 +129,64 @@ const logout = async (userId) => {
   );
 };
 
-export { register, login, refreshAccessToken, logout };
+/**
+ * @description Send password reset email.
+ */
+const forgotPassword = async (email) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    // Return a generic success to prevent user enumeration
+    return { message: "If an account with that email exists, we have sent a password reset link." };
+  }
+
+  // Get reset token
+  const resetToken = user.getResetPasswordToken();
+
+  await user.save({ validateBeforeSave: false });
+
+  // Create reset url
+  const resetUrl = `${env.FRONTEND_URL}/reset-password/${resetToken}`;
+
+  try {
+    await sendResetPasswordEmail(user.email, resetUrl);
+    return { message: "If an account with that email exists, we have sent a password reset link." };
+  } catch (error) {
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save({ validateBeforeSave: false });
+    throw new ApiError(500, "Email could not be sent");
+  }
+};
+
+/**
+ * @description Reset password.
+ */
+const resetPassword = async (token, password) => {
+  // Hash token
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    throw new ApiError(400, "Invalid or expired token");
+  }
+
+  // Set new password
+  user.password = password;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+  user.refreshToken = undefined;
+
+  await user.save();
+
+  return { message: "Password reset success" };
+};
+
+export { register, login, refreshAccessToken, logout, forgotPassword, resetPassword };

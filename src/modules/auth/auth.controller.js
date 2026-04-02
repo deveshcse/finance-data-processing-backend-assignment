@@ -91,4 +91,30 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     );
 });
 
-export { register, login, logout, refreshAccessToken };
+/**
+ * @description Handle forgot password request.
+ */
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const result = await authService.forgotPassword(email);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, result, "Password reset email sent."));
+});
+
+/**
+ * @description Handle reset password request.
+ */
+const resetPassword = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  const result = await authService.resetPassword(token, password);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, result, "Password reset successfully."));
+});
+
+export { register, login, logout, refreshAccessToken, forgotPassword, resetPassword };
