@@ -1,0 +1,15 @@
+name: Keep Render App Alive
+
+on:
+  schedule:
+    - cron: "*/13 6-23 * * *"  # every 13 min from 6 AM to 11 PM
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ping Render health endpoint
+        run: |
+          curl -s https://finance-data-processing-backend.onrender.com/health > /dev/null
