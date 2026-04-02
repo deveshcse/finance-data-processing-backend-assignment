@@ -12,4 +12,6 @@ jobs:
     steps:
       - name: Ping Render health endpoint
         run: |
-          curl -s https://finance-data-processing-backend.onrender.com/health > /dev/null
+          echo "Pinging at $(date -u)"
+          curl -v -w "\n\nHTTP Status: %{http_code}\nTotal Time: %{time_total}s\n" \
+            https://finance-data-processing-backend.onrender.com/health
